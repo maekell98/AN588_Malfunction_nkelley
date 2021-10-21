@@ -1,0 +1,10 @@
+---
+title: "nkelley_OriginalHomeworkCode_04"
+author: "maekell98"
+date: "10/20/2021"
+output: html_document
+---
+
+[1] Write a simple R function, Z.prop.test(), that can perform one- or two-sample Z-tests for proportion data
+
+
