@@ -8,3 +8,7 @@ output: html_document
 [1] Write a simple R function, Z.prop.test(), that can perform one- or two-sample Z-tests for proportion data
 
 
+Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = two.sided, conf.level = 0.95) {
+  pstar <- (sum(v1) + sum(v2))/n1 + n2)
+  
+}
