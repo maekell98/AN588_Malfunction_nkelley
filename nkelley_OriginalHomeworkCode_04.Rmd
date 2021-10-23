@@ -10,5 +10,6 @@ output: html_document
 
 Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = two.sided, conf.level = 0.95) {
   pstar <- (sum(v1) + sum(v2))/n1 + n2)
-  
+  if(!is.null(y)) x <- x+y
+  return(x)
 }
