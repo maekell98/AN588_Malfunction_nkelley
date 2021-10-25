@@ -91,13 +91,72 @@ library(ggplot2)
 library(tidyverse)
 ```
 
+```{r load regression packages}
+
+install.packages("gridExtra")
+install.packages("manipulate")
+install.packages("lmodel2")
+```
+
+```{r library}
+library(gridExtra)
+library(manipulate)
+library(lmodel2)
+```
+
 [2] The dataset from Kamilar and Cooper has in it a large number of variables related to life history and body size. For this exercise, the end aim is to fit a simple linear regression model to predict longevity (MaxLongevity_m) measured in months from species’ brain size (Brain_Size_Species_Mean) measured in grams. Do the following for both longevity~brain size and log(longevity)~log(brain size):
+
+```{r load in Kamilar Cooper data}
+f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall21/KamilarAndCooperData.csv")
+
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+#creates data frame from raw csv file
+```
 
 1) Fit the regression model and, using {ggplot2}, produce a scatterplot with the fitted line superimposed upon the data. Append the the fitted model equation to your plot (HINT: use the function geom_text()).
 
-```{r fit regression model and produce scatterplot}
+```{r regression and equation}
 
+m <- lm(MaxLongevity_m ~ Brain_Size_Species_Mean, data = d)
+m
+
+eq <- function(x,y) {
+  m <- lm(y ~ x)
+  as.character(
+    as.expression(
+      substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,
+                list(a = format(coef(m)[1], digits = 4),
+                b = format(coef(m)[2], digits = 4),
+                r2 = format(summary(m)$r.squared, digits = 3)))
+    )
+  )
+}
 ```
+eq() from https://www.roelpeters.be/how-to-add-a-regression-equation-and-r-squared-in-ggplot2/
+
+```{r ggplot linear regressions}
+g <- ggplot(data = d, aes(x = Brain_Size_Species_Mean, y = MaxLongevity_m), xlab = "Brain Size Species Mean", ylab = "Max Longevity", main = "Brain Size vs Longevity")
+g <- g + geom_point()
+g <- g + geom_smooth(method = "lm", formula = y ~ x)
+g <- g + geom_text(x = 200, y = 775, label = eq(d$MaxLongevity_m, d$Brain_Size_Species_Mean), parse = TRUE)
+g
+```
+
+```{r model II regression analysis}
+mII <- lmodel2(MaxLongevity_m ~ Brain_Size_Species_Mean, data = d, range.y = "relative", range.x = "relative",
+    nperm = 1000)
+mII
+
+plot(mII, "OLS", xlab = "Brain Size Species Mean", ylab = "Max Longevity", main = "Brain Size vs Longevity")
+
+
+g <- ggplot(data = d, aes(x = Brain_Size_Species_Mean, y = MaxLongevity_m))
+g <- g + geom_point()
+g <- g + geom_smooth(method = "lmodel2", formula = y ~ x)
+g <- g + geom_text(x = 200, y = 700, label = eq(d$MaxLongevity_m, d$Brain_Size_Species_Mean), parse = TRUE)
+g
+```
+I wasn't sure if I needed to use ModelII analysis, but when I tried I wasn't sure how to add the linear regression line. 
 
 2) Identify and interpret the point estimate of the slope (\(\beta_1\)), as well as the outcome of the test associated with the hypotheses H0: \(\beta_1\) = 0; HA: \(\beta_1\) ≠ 0. Also, find a 90 percent CI for the slope (\(\beta_1\)) parameter.
 
