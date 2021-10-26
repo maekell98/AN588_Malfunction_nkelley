@@ -120,6 +120,11 @@ d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
 m <- lm(MaxLongevity_m ~ Brain_Size_Species_Mean, data = d)
 m
 
+t <- coef(summary(m))
+t <- data.frame(unlist(t))
+colnames(t) <- c("Est", "SE", "t", "p")
+t
+
 eq <- function(x,y) {
   m <- lm(y ~ x)
   as.character(
@@ -162,9 +167,8 @@ I wasn't sure if I needed to use ModelII analysis, but when I tried I wasn't sur
 
 ```{r id and interpret slope and test, also CI}
 
-beta1 <- cor(d$MaxLongevity_m, d$Brain_Size_Species_Mean) * sd(d$MaxLongevity_m)/sd(d$Brain_Size_Species_Mean)
+beta1 <- t$Est[2]
 beta1
-
 
 ```
 
