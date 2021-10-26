@@ -29,20 +29,20 @@ CI <- c(lower, upper)
   return(CI)
 #95% confidence interval based on normal distribution  
 
-  if(alternative = "less"){
+  if(alternative == "less"){
     P <- pnorm(Z, lower.tail = TRUE)
     P
   } 
 #here specify what should be done if two sample (if p1 smaller aka alternative = "less"/larger aka alternative = "greater" than p2 -- same as x and y in function t.test())
 ##this calculates one-sided p value of p1<p2
 
-  if(alternative = "greater"){
+  if(alternative == "greater"){
     P <- pnorm(Z, lower.tail = FALSE)
     P
 } 
 #this calcuates one-sided p value of p1>p2
 
-  if(p2 = NULL || n2 = NULL){
+  if(is.null(p2) || is.null(n2)){
     
     Z <- (p1-p0)/(sqrt(p0(1-p0)/n1))
     return(Z)
@@ -52,10 +52,10 @@ CI <- c(lower, upper)
   return(P)
 #p value associated with Z for one-sample Z test
     
-     if(alternative = "greater"){P <- pnorm(Z, lower.tail = FALSE)
+     if(alternative == "greater"){P <- pnorm(Z, lower.tail = FALSE)
   return(P)}
     
-    if(alternative = "less"){P <- pnorm(Z, lower.tail = TRUE)
+    if(alternative == "less"){P <- pnorm(Z, lower.tail = TRUE)
   return(P)}
 #p values for greater and less than alternatives  
     
@@ -68,7 +68,7 @@ CI <- c(lower, upper)
 }
 #here if p2 or n2 or both is NULL, perform one-sample Z test. "||" means [or](http://applied-r.com/conditionals-in-r/)
 
-  if((n1 * p1 > 5) = FALSE || (n1 * (1-p1) > 5) = FALSE || (n2 * p2 > 5) = FALSE || (n2 * (1-p2) > 5) = FALSE) {
+  if((n1 * p1 > 5) == FALSE || (n1 * (1-p1) > 5) == FALSE || (n2 * p2 > 5) == FALSE || (n2 * (1-p2) > 5) == FALSE) {
     warning("normal distribution invalid")} 
 #here specify that if (\(n * p > 5\) and \(n * (1-p) > 5\)) untrue, run function but print error message that assumptions aren't met. Included for p2/n2 as well. Not sure if these should be separated somehow. 
 
@@ -161,6 +161,10 @@ I wasn't sure if I needed to use ModelII analysis, but when I tried I wasn't sur
 2) Identify and interpret the point estimate of the slope (\(\beta_1\)), as well as the outcome of the test associated with the hypotheses H0: \(\beta_1\) = 0; HA: \(\beta_1\) ≠ 0. Also, find a 90 percent CI for the slope (\(\beta_1\)) parameter.
 
 ```{r id and interpret slope and test, also CI}
+
+beta1 <- cor(d$MaxLongevity_m, d$Brain_Size_Species_Mean) * sd(d$MaxLongevity_m)/sd(d$Brain_Size_Species_Mean)
+beta1
+
 
 ```
 
