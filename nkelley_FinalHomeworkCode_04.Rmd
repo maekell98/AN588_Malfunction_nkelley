@@ -188,18 +188,15 @@ confint(m, 'Brain_Size_Species_Mean', level=0.90)
 3) Using your model, add lines for the 90 percent confidence and prediction interval bands on the plot and add a legend to differentiate between the lines.
 ```{r ad 90% CI and legend}
 
-pi <- predict(m, newdata = data.frame(Brain_Size_Species_Mean = x), interval = "prediction",
-    level = 0.90)  # for a vector of values
-head(pi)
-
-df <- cbind(df, ci)
-names(df) <- c("x", "y", "yhat", "CIfit", "CIlwr", "CIupr")
-head(df)
+pi <- predict(m, newdata = data.frame(Brain_Size_Species_Mean = 1.21799), interval = "prediction",
+    level = 0.90)  # for a single value
+pi
 
 df <- cbind(df, pi)
-names(df) <- c("x", "y", "yhat", "CIfit", "CIlwr", "CIupr", "PIfit", "PIlwr",
-    "PIupr")
+names(df) <- c("x", "y", "yhat", "CIfit", "CIlwr", "CIupr", "PIfit", "PIlwr", "PIupr")
 head(df)
+
+
 
 g <- g + geom_line(data = df, aes(x = x, y = PIlwr), colour = "red")
 g <- g + geom_line(data = df, aes(x = x, y = PIupr), colour = "red")
