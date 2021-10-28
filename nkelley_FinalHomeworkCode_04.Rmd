@@ -16,71 +16,67 @@ output: html_document
 Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sided", conf.level = 0.95) 
 #specifies arguments
 {
-  pstar <- ((p2*n2)+(p1*n1))/(n1 + n2)
+    pstar <- ((p2*n2)+(p1*n1))/(n1 + n2)
 #pstar is the pooled proportion for both samples
   
+    if((n1 * p1 > 5) == FALSE || (n1 * (1-p1) > 5) == FALSE || (n2 * p2 > 5) == FALSE || (n2 * (1-p2) > 5) == FALSE) {
+    warning("normal distribution invalid")} 
+#here specify that if (\(n * p > 5\) and \(n * (1-p) > 5\)) untrue, run function but print error message that assumptions aren't met.
+  
+  if(alternative == "two.tailed"){
   Z <- (p2-p1-p0)/(sqrt(pstar(1-pstar)(1/n1 + 1/n2)))
-  return(Z)
+  print(Z)
 #Z test statistic for two-sample Z test
-  
   P <- 1 - pnorm(Z, lower.tail = TRUE) + pnorm(Z, lower.tail = FALSE)
-  return(P)
-#I believe this p value is for if the two proportions differ significantly from one another, but I need to look into it more.
-  
-  lower <- p1 - qnorm(0.975) * sqrt(p1 * (1 - p1)/30)
-upper <- p1 + qnorm(0.975) * sqrt(p1 * (1 - p1)/30)
-CI <- c(lower, upper)
-  return(CI)
-#95% confidence interval based on normal distribution  
+  print(P)
+#p value for two-sample Z test
+lower <- ((p2-p1)-qnorm(conf.level) * sqrt((p2-p1)*(1-(p2-p1)))/n1) 
+upper <- ((p2-p1)+qnorm(conf.level) * sqrt((p2-p1)*(1-(p2-p1)))/n1)
+     CI <- c(lower, upper)
+#confidence interval based on normal distribution  
+}
 
   if(alternative == "less"){
+        Z <- (p2-p1)/(sqrt(pstar(1-pstar)(1/n1 + 1/n2)))
+#z for p1<p2
     P <- pnorm(Z, lower.tail = TRUE)
-    P
-  } 
-#here specify what should be done if two sample (if p1 smaller aka alternative = "less"/larger aka alternative = "greater" than p2 -- same as x and y in function t.test())
-##this calculates one-sided p value of p1<p2
+#p for p1<p2
+    lower <- ((p2-p1)-qnorm(conf.level) * sqrt((p2-p1)*(1-(p2-p1)))/n1) # ci intervals
+upper <- ((p2-p1)+qnorm(conf.level) * sqrt((p2-p1)*(1-(p2-p1)))/n1)
+     CI <- c(lower, upper)
+#CI for p1<p2
+} 
+#two sample, p1<p2
 
   if(alternative == "greater"){
+    Z <- (p1-p2)/(sqrt(pstar(1-pstar)(1/n1 + 1/n2)))
+# z for p1>p2
     P <- pnorm(Z, lower.tail = FALSE)
-    P
+#p for pw>p2
+      lower <- ((p1-p2)-qnorm(conf.level) * sqrt((p1-p2)*(1-(p1-p2)))/n1) 
+upper <- ((p1-p2)+qnorm(conf.level) * sqrt((p1-p2)*(1-(p1-p2)))/n1)
+     CI <- c(lower, upper)
+#confidence interval for p1>p2 test
 } 
 #this calcuates one-sided p value of p1>p2
 
   if(is.null(p2) || is.null(n2)){
-    
     Z <- (p1-p0)/(sqrt(p0(1-p0)/n1))
-    return(Z)
 #Z statistic for one-sample Z test    
-    
     P <- pnorm(Z, two.sided = TRUE)
-  return(P)
 #p value associated with Z for one-sample Z test
-    
-     if(alternative == "greater"){P <- pnorm(Z, lower.tail = FALSE)
-  return(P)}
-    
-    if(alternative == "less"){P <- pnorm(Z, lower.tail = TRUE)
-  return(P)}
-#p values for greater and less than alternatives  
-    
-    lower <- p1 - qnorm(0.975) * sqrt(p1 * (1 - p1)/30)
-    upper <- p1 + qnorm(0.975) * sqrt(p1 * (1 - p1)/30)
+    lower <- p1 - qnorm(conf.level) * sqrt(p1 * (1 - p1)/n1)
+    upper <- p1 + qnorm(conf.level) * sqrt(p1 * (1 - p1)/n1)
 CI <- c(lower, upper)
-  return(CI)
 #CI for one-sample Z test
- 
 }
 #here if p2 or n2 or both is NULL, perform one-sample Z test. "||" means [or](http://applied-r.com/conditionals-in-r/)
-
-  if((n1 * p1 > 5) == FALSE || (n1 * (1-p1) > 5) == FALSE || (n2 * p2 > 5) == FALSE || (n2 * (1-p2) > 5) == FALSE) {
-    warning("normal distribution invalid")} 
-#here specify that if (\(n * p > 5\) and \(n * (1-p) > 5\)) untrue, run function but print error message that assumptions aren't met. Included for p2/n2 as well. Not sure if these should be separated somehow. 
-
-#return Z (test statistic), P (appropriate p value), CI (two-sided CI with respect to “conf.level” around p1 in the case of a one-sample test and around p2-p1 in the case of a two-sample test; calc symmetric CIs based on quantiles of normal distribution rather than single-limit confidence bounds!)
-  
-
-} # end of function
-
+    
+values <- c(Z, P, CI)
+print(values)
+ 
+}
+ # end of function
 ```
 
 ```{r load}
@@ -122,12 +118,16 @@ d <- na.omit(c)
 1) Fit the regression model and, using {ggplot2}, produce a scatterplot with the fitted line superimposed upon the data. Append the the fitted model equation to your plot (HINT: use the function geom_text()).
 
 ```{r regression and equation}
-
-m <- lm(MaxLongevity_m ~ Brain_Size_Species_Mean, data = d)
-m
-
+#normal variables
 x <- d$MaxLongevity_m
 y<- d$Brain_Size_Species_Mean
+#log variables
+lx <- log(d$MaxLongevity_m)
+ly <- log(d$Brain_Size_Species_Mean)
+
+#for normal
+m <- lm(x~y, data = d)
+m
 
 t <- coef(summary(m))
 t <- data.frame(unlist(t))
@@ -145,71 +145,171 @@ eq <- function(x,y) {
     )
   )
 }
+
+#for log
+ml <- lm(lx~ly, data = d)
+ml
+
+lt <- coef(summary(ml))
+lt <- data.frame(unlist(lt))
+colnames(lt) <- c("Est", "SE", "t", "p")
+lt
+
+leq <- function(lx,ly) {
+  ml <- lm(ly ~ lx)
+  as.character(
+    as.expression(
+      substitute(italic(ly) == a + b %.% italic(lx)*","~~italic(r)^2~"="~r2,
+                list(a = format(coef(ml)[1], digits = 4),
+                b = format(coef(ml)[2], digits = 4),
+                r2 = format(summary(ml)$r.squared, digits = 3)))
+    )
+  )
+}
 ```
 eq() from https://www.roelpeters.be/how-to-add-a-regression-equation-and-r-squared-in-ggplot2/
 
 ```{r ggplot linear regressions}
-g <- ggplot(data = d, aes(x = x, y = y), xlab = "Brain Size Species Mean", ylab = "Max Longevity", main = "Brain Size vs Longevity")
-g <- g + geom_point()
+#for normal
+g <- ggplot(data = d, aes(x = x, y = y)) + geom_point()
 g <- g + geom_smooth(method = "lm", formula = y ~ x)
-g <- g + geom_text(x = 200, y = 775, label = eq(x, y), parse = TRUE)
-g
+g <- g + geom_text(x = 400, y = 400, label = eq(x, y), parse = TRUE)
+g + labs(x = "Brain Size Species Mean", y = "Max Longevity", title = "Brain Size vs Longevity")
+
+#for log
+lg <- ggplot(data = d, aes(x = lx, y = ly)) + geom_point()
+lg <- lg + geom_smooth(method = "lm", formula = ly ~ lx)
+lg <- lg + geom_text(x = 6, y = 6, label = leq(lx, ly), parse = TRUE)
+lg + labs(x = "Log Brain Size Species Mean", y = "Log Max Longevity", title = "Log Brain Size vs Log Max Longevity")
+
 ```
-
-```{r model II regression analysis}
-mII <- lmodel2(x ~ y, data = d, range.y = "relative", range.x = "relative",
-    nperm = 1000)
-mII
-
-plot(mII, "OLS", xlab = "Brain Size Species Mean", ylab = "Max Longevity", main = "Brain Size vs Longevity")
-
-
-h <- ggplot(data = d, aes(x, y))
-h <- h + geom_point()
-h <- h + geom_smooth(method = "lmodel2", formula = y ~ x)
-h <- h + geom_text(x = 200, y = 700, label = eq(x, y), parse = TRUE)
-h
-```
-I wasn't sure if I needed to use ModelII analysis, but when I tried I wasn't sure how to add the linear regression line. 
 
 2) Identify and interpret the point estimate of the slope (\(\beta_1\)), as well as the outcome of the test associated with the hypotheses H0: \(\beta_1\) = 0; HA: \(\beta_1\) ≠ 0. Also, find a 90 percent CI for the slope (\(\beta_1\)) parameter.
 
 ```{r id and interpret slope and test, also CI}
+t1 <- unlist(m$coefficients)
+# normal
+beta0<- t[1]
+beta0 
 
-beta1 <- t$Est[2]
+beta1 <- t[2]
 beta1
-#1.21799
 
-confint(m, 'Brain_Size_Species_Mean', level=0.90)
-#                           5 %    95 %
-#Brain_Size_Species_Mean 1.035571 1.40041
+ci.slope <- confint(m, level=0.90)
+ci.slope
+
+# log
+
+lbeta0<- lt[1]
+lbeta0 
+
+lbeta1 <- lt[2]
+lbeta1
+
+lci.slope <- confint(ml, level=0.90)
+lci.slope
+
 ```
+Result:
+(Intercept)	307.7522151	
+y	0.8789037	
+
+(Intercept)	5.0864977	
+ly	0.2028543	
+
+                    5 %       95 %
+(Intercept) 260.1112167 355.393214
+y             0.5928154   1.164992
+                  5 %      95 %
+(Intercept) 4.7030309 5.4699646
+ly          0.1172695 0.2884391
 
 3) Using your model, add lines for the 90 percent confidence and prediction interval bands on the plot and add a legend to differentiate between the lines.
 ```{r ad 90% CI and legend}
+#normal
+ci <- predict(m, newdata = data.frame(x = x), interval = "confidence", level = 0.90)
+pi <- predict(m, newdata = data.frame(x = x), interval = "prediction", level = 0.90)
 
-pi <- predict(m, newdata = data.frame(Brain_Size_Species_Mean = 1.21799), interval = "prediction",
-    level = 0.90)  # for a single value
-pi
+require(gridExtra)
+require(ggplot2)
+library(tidyverse)
 
-df <- cbind(df, pi)
-names(df) <- c("x", "y", "yhat", "CIfit", "CIlwr", "CIupr", "PIfit", "PIlwr", "PIupr")
-head(df)
+colors <- c("CI Lower" = "green", "CI Upper" = "purple", "PI Lower" = "red", "PI Upper" = "orange")
+
+df <- data.frame(cbind(x, ci, pi))
+names(df) <- c("x", "CIfit", "CIlower", "CIupper", "PIfit", "PIlower", "PIupper")
 
 
+g1 <- ggplot(data = m, aes(x = x, y = y))
+g1 <- g1 + geom_point(alpha = 1/2)
+g1 <- g1 + geom_smooth(method = "lm", formula = y ~ x) +
+    geom_line(data = df, aes(x = x, y = CIfit), colour = "black", lwd = 1)
+g1 <- g1 + geom_line(data = df, aes(x = x, y = CIlower), colour = "green")
+g1 <- g1 + geom_line(data = df, aes(x = x, y = CIupper), colour = "purple")
+g1 <- g1 + geom_line(data = df, aes(x = x, y = PIlower), colour = "red")
+g1 <- g1 + geom_line(data = df, aes(x = x, y = PIupper), colour = "orange") +
+labs(x = "Brain Size Species Mean",
+         y = "Max Longevity",
+         color = "Legend") +
+    scale_color_manual(values = colours)
+g1
 
-g <- g + geom_line(data = df, aes(x = x, y = PIlwr), colour = "red")
-g <- g + geom_line(data = df, aes(x = x, y = PIupr), colour = "red")
-g
+#log
+lci <- predict(ml, newdata = data.frame(x = lx), interval = "confidence", level = 0.90)
+lpi <- predict(ml, newdata = data.frame(x = lx), interval = "prediction", level = 0.90)
 
+require(gridExtra)
+require(ggplot2)
+library(tidyverse)
+
+colors <- c("CI Lower" = "green", "CI Upper" = "purple", "PI Lower" = "red", "PI Upper" = "orange")
+
+ldf <- data.frame(cbind(lx, lci, lpi))
+names(ldf) <- c("x", "CIfit", "CIlower", "CIupper", "PIfit", "PIlower", "PIupper")
+
+
+lg1 <- ggplot(data = ml, aes(x = lx, y = ly))
+lg1 <- lg1 + geom_point(alpha = 1/2)
+lg1 <- lg1 + geom_smooth(method = "lm", formula = ly ~ lx) +
+    geom_line(data = ldf, aes(x = lx, y = CIfit), colour = "black", lwd = 1)
+lg1 <- lg1 + geom_line(data = ldf, aes(x = lx, y = CIlower), colour = "green")
+lg1 <- lg1 + geom_line(data = ldf, aes(x = lx, y = CIupper), colour = "purple")
+lg1 <- lg1 + geom_line(data = ldf, aes(x = lx, y = PIlower), colour = "red")
+lg1 <- lg1 + geom_line(data = ldf, aes(x = lx, y = PIupper), colour = "orange") +
+labs(x = "Brain Size Species Mean",
+         y = "Max Longevity",
+         color = "Legend") +
+    scale_color_manual(values = colours)
+lg1
 ```
 
 4) Produce a point estimate and associated 90 percent PI for the longevity of a species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
 ```{r 90% PI}
+#normal
+predict(m, newdata = data.frame(x = 800))
+#point estimate
 
+predict(m, newdata = data.frame(x = 800), interval = "prediction", level = 0.90)
+#PI
 
+#log
+predict(ml, newdata = data.frame(x = log(800)))
+#point estimate
+
+predict(ml, newdata = data.frame(x = log(800)), interval = "prediction", level = 0.90)
+#PI
 
 ```
+This is an extrapolation, and the r^2 associated with this extrapolation is very low, so I would not trust this prediction. The r^2 for my log predictions is lower though, which is not the expected result. I was expecting the log to be more reliable. I think something may have gone wrong, but I can't figure out what. 
 
 5) Looking at your two models, which do you think is better? Why?
 
+I expected the first model to be worse than the log model, but the r^2 for my log model is lower, which is unexpected. I was expecting the log to be more reliable. I think something may have gone wrong, but I can't figure out what. 
+
+Challenges:
+
+1) My prediction lines look very messed up. I think they should be smooth, but I can't figure out what went wrong.
+
+2) I'm having trouble getting a legend to appear for the different prediction line colors. 
+
+3) My log model is not giving the expected results, so I'm concerned something went wrong. 
