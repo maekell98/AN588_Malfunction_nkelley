@@ -78,6 +78,10 @@ print(values)
 }
  # end of function
 ```
+From Abby: cat( "Z_score =", Z.two.sample <- Z.two.sample, "\n", 
+     "CI =", CI.two.sample <- CI.two.sample, "\n", 
+     "P-Value =", P.Value <- P.Value, "\n")
+}
 
 ```{r load}
 install.packages("tidyverse")
@@ -189,10 +193,10 @@ lg + labs(x = "Log Brain Size Species Mean", y = "Log Max Longevity", title = "L
 ```{r id and interpret slope and test, also CI}
 t1 <- unlist(m$coefficients)
 # normal
-beta0<- t[1]
+beta0<- t$Est[1]
 beta0 
 
-beta1 <- t[2]
+beta1 <- t$Est[2]
 beta1
 
 ci.slope <- confint(m, level=0.90)
@@ -200,10 +204,10 @@ ci.slope
 
 # log
 
-lbeta0<- lt[1]
+lbeta0<- lt$Est[1]
 lbeta0 
 
-lbeta1 <- lt[2]
+lbeta1 <- lt$Est[2]
 lbeta1
 
 lci.slope <- confint(ml, level=0.90)
