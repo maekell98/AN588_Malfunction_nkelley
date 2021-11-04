@@ -132,6 +132,7 @@ ly <- log(d$Brain_Size_Species_Mean)
 #for normal
 m <- lm(x~y, data = d)
 m
+summary(m)
 
 t <- coef(summary(m))
 t <- data.frame(unlist(t))
@@ -153,6 +154,7 @@ eq <- function(x,y) {
 #for log
 ml <- lm(lx~ly, data = d)
 ml
+summary(ml)
 
 lt <- coef(summary(ml))
 lt <- data.frame(unlist(lt))
