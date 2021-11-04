@@ -83,7 +83,7 @@ From Abby: cat( "Z_score =", Z.two.sample <- Z.two.sample, "\n",
      "P-Value =", P.Value <- P.Value, "\n")
 }
 
-```{r load}
+```{r load packages}
 install.packages("tidyverse")
 
 install.packages("ggplot2")
