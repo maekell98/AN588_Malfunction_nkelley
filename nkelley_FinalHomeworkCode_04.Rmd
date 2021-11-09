@@ -83,6 +83,8 @@ From Abby: cat( "Z_score =", Z.two.sample <- Z.two.sample, "\n",
      "P-Value =", P.Value <- P.Value, "\n")
 }
 
+*The "alternative" part of the function is just indicating to the function which side of the distribution you are looking at (in a one or two sample test). Everything else in the function should be constant except for the "lower.tail" part of defining p (so basically you dont have to repeat the CI equation each time). Also, don't forget to plug some values into the function to see if it works!*
+
 ```{r load packages}
 install.packages("tidyverse")
 
