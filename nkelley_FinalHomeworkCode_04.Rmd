@@ -192,6 +192,8 @@ lg + labs(x = "Log Brain Size Species Mean", y = "Log Max Longevity", title = "L
 
 ```
 
+*check that the intercept from the summary of you model matches that of your graph. it looks like your model in ggplot doesnt match the original (x~y vs y~x)* 
+
 2) Identify and interpret the point estimate of the slope (\(\beta_1\)), as well as the outcome of the test associated with the hypotheses H0: \(\beta_1\) = 0; HA: \(\beta_1\) ≠ 0. Also, find a 90 percent CI for the slope (\(\beta_1\)) parameter.
 
 ```{r id and interpret slope and test, also CI}
@@ -290,6 +292,8 @@ labs(x = "Brain Size Species Mean",
     scale_color_manual(values = colours)
 lg1
 ```
+
+*I'm not totally sure what's happening here. You dont need a line for CIfit, but idk why the others arent straight. They are likely above your best fit line due to the inconsistency in model formation that I mentioned above*
 
 4) Produce a point estimate and associated 90 percent PI for the longevity of a species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
 ```{r 90% PI}
