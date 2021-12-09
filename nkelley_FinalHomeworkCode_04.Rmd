@@ -96,7 +96,36 @@ From Abby: cat( "Z_score =", Z.two.sample <- Z.two.sample, "\n",
      "P-Value =", P.Value <- P.Value, "\n")
 }
 
+<<<<<<< HEAD
 # Part Two: Regression
+=======
+*The "alternative" part of the function is just indicating to the function which side of the distribution you are looking at (in a one or two sample test). Everything else in the function should be constant except for the "lower.tail" part of defining p (so basically you dont have to repeat the CI equation each time). Also, don't forget to plug some values into the function to see if it works!*
+
+```{r load packages}
+install.packages("tidyverse")
+
+install.packages("ggplot2")
+
+library(curl)
+
+library(ggplot2)
+
+library(tidyverse)
+```
+
+```{r load regression packages}
+
+install.packages("gridExtra")
+install.packages("manipulate")
+install.packages("lmodel2")
+```
+
+```{r library}
+library(gridExtra)
+library(manipulate)
+library(lmodel2)
+```
+>>>>>>> 5ccb87e66541538690635b6f5b6b35367b137a5c
 
 The dataset from Kamilar and Cooper has in it a large number of variables related to life history and body size. For this exercise, the end aim is to fit a simple linear regression model to predict longevity (MaxLongevity_m) measured in months from species’ brain size (Brain_Size_Species_Mean) measured in grams. Do the following for both longevity~brain size and log(longevity)~log(brain size):
 
@@ -188,6 +217,7 @@ lg
 
 ```
 
+<<<<<<< HEAD
 
 
 **Notes from Class:**
@@ -202,6 +232,11 @@ for colors: scale_color_manual(name = "Intervals - 90%", values=c("Confidence" =
 ## Slope Estimate with Hypothesis Test and CI
 
 Identify and interpret the point estimate of the slope (\(\beta_1\)), as well as the outcome of the test associated with the hypotheses H0: \(\beta_1\) = 0; HA: \(\beta_1\) ≠ 0. Also, find a 90 percent CI for the slope (\(\beta_1\)) parameter.
+=======
+*check that the intercept from the summary of you model matches that of your graph. it looks like your model in ggplot doesnt match the original (x~y vs y~x)* 
+
+2) Identify and interpret the point estimate of the slope (\(\beta_1\)), as well as the outcome of the test associated with the hypotheses H0: \(\beta_1\) = 0; HA: \(\beta_1\) ≠ 0. Also, find a 90 percent CI for the slope (\(\beta_1\)) parameter.
+>>>>>>> 5ccb87e66541538690635b6f5b6b35367b137a5c
 
 ```{r id and interpret slope and test, also CI}
 t1 <- unlist(m$coefficients)
@@ -274,10 +309,16 @@ lg1 <- ggplot(data = ldf, aes(x = lx, y = ly)) +
 lg1
 ```
 
+<<<<<<< HEAD
 ## Point Estimate with 90% PI 
 
 Produce a point estimate and associated 90 percent PI for the longevity of a species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
 
+=======
+*I'm not totally sure what's happening here. You dont need a line for CIfit, but idk why the others arent straight. They are likely above your best fit line due to the inconsistency in model formation that I mentioned above*
+
+4) Produce a point estimate and associated 90 percent PI for the longevity of a species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
+>>>>>>> 5ccb87e66541538690635b6f5b6b35367b137a5c
 ```{r 90% PI}
 #normal
 predict(m, newdata = data.frame(x = 800))
